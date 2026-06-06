@@ -23,6 +23,13 @@ lemma predictablePart_add_one (n : ℕ) :
       predictablePart X 𝓕 μ n + μ[X (n + 1) - X n | 𝓕 n] := by
   simp [predictablePart, Finset.sum_range_add]
 
+lemma Submartingale.monotone_predictablePart_of_ordered [PartialOrder E] [IsOrderedAddMonoid E]
+    (hX : Submartingale X 𝓕 μ) : ∀ᵐ ω ∂μ, Monotone (predictablePart X 𝓕 μ · ω) := by
+  filter_upwards [ae_all_iff.2 <| fun n : ℕ ↦ hX.condExp_sub_nonneg n.le_succ] with ω h
+  refine monotone_nat_of_le_succ fun n ↦ ?_
+  rw [predictablePart_add_one, Pi.add_apply]
+  exact le_add_of_nonneg_right (h n)
+
 variable [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
 
 lemma isPredictable_predictablePart : IsPredictable 𝓕 (predictablePart X 𝓕 μ) :=
