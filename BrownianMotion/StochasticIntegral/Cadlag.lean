@@ -3,18 +3,16 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Nat.Nth
-import Mathlib.Topology.Bases
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Sequences
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-! # cadlag functions
 
 -/
+
+@[expose] public section
 
 open Filter TopologicalSpace Bornology
 open scoped Topology
@@ -22,17 +20,22 @@ open scoped Topology
 variable {ι E : Type*} [TopologicalSpace ι] [TopologicalSpace E]
 
 /-- The predicate that a function is right continuous. -/
-abbrev Function.RightContinuous [PartialOrder ι] (f : ι → E) :=
+abbrev Function.IsRightContinuous [PartialOrder ι] (f : ι → E) :=
   ∀ a, ContinuousWithinAt f (Set.Ioi a) a
 
-lemma Function.RightContinuous.continuous_comp {F : Type*} [TopologicalSpace F] [PartialOrder ι]
+lemma Function.IsRightContinuous.continuous_comp {F : Type*} [TopologicalSpace F] [PartialOrder ι]
     {g : E → F}
-    {f : ι → E} (hg : Continuous g) (hf : RightContinuous f) : RightContinuous (g ∘ f) :=
+    {f : ι → E} (hg : Continuous g) (hf : IsRightContinuous f) : IsRightContinuous (g ∘ f) :=
   fun x ↦ (hg.tendsto (f x)).comp (hf x)
+
+@[simp]
+lemma Function.isRightContinuous_const [PartialOrder ι] (c : E) :
+    IsRightContinuous (fun _ ↦ c : ι → E) :=
+  fun _ ↦ continuousWithinAt_const
 
 /-- A function is cadlag if it is right-continuous and has left limits. -/
 structure IsCadlag [PartialOrder ι] (f : ι → E) : Prop where
-  right_continuous : Function.RightContinuous f
+  right_continuous : Function.IsRightContinuous f
   left_limit : ∀ x, ∃ l, Tendsto f (𝓝[<] x) (𝓝 l)
 
 lemma IsCadlag.add {E : Type*} [Add E] [TopologicalSpace E] [ContinuousAdd E] [PartialOrder ι]

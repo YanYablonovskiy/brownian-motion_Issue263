@@ -21,16 +21,16 @@ A process $X : T \to \Omega \to E$ is said to be adapted with respect to a filtr
 \end{definition}
 
 
-\begin{definition}[Progressively measurable]\label{def:ProgMeasurable}
+\begin{definition}[Progressively measurable]\label{def:IsStronglyProgressive}
   \uses{def:filtration}
   \mathlibok
-  \lean{MeasureTheory.ProgMeasurable}
+  \lean{MeasureTheory.IsStronglyProgressive}
 A stochastic process $X$ is said to be progressively measurable with respect to a filtration $\mathcal{F}$ if at each point in time $i$, $X$ restricted to $(-\infty, i] \times \Omega$ is measurable with respect to the product $\sigma$-algebra where the $\sigma$-algebra used for $\Omega$ is $\mathcal{F}_i$.
 \end{definition}
 
 \begin{definition}[Right continuous function]\label{def:RightContinuous}
   \leanok
-  \lean{Function.RightContinuous}
+  \lean{Function.IsRightContinuous}
   Let $T$ be equipped with a partial order and $f : T \to E$ be a function. Then $f$ is right
   continuous if for all $t \in T$, $\lim_{s \downarrow t} f(s) = f(t)$.
 \end{definition}
@@ -43,10 +43,10 @@ A stochastic process $X$ is said to be progressively measurable with respect to 
 \end{definition}
 
 
-\begin{lemma}\label{lem:Adapted.progMeasurable_of_rightContinuous}
-  \uses{def:adapted, def:ProgMeasurable, def:RightContinuous}
+\begin{lemma}\label{lem:Adapted.isStronglyProgressive_of_rightContinuous}
+  \uses{def:adapted, def:IsStronglyProgressive, def:RightContinuous}
   \leanok
-  \lean{MeasureTheory.StronglyAdapted.progMeasurable_of_rightContinuous}
+  \lean{MeasureTheory.StronglyAdapted.isStronglyProgressive_of_rightContinuous}
 Suppose $T$ is a linearly ordered set equipped with the order topology. If $T$ is second countable and a stochastic process $(X_t)_{t \in T}$ is right continuous and adapted, then it is progressively measurable.
 \end{lemma}
 
@@ -150,8 +150,8 @@ Let then $A \in \mathcal{F}_i$.
 
 
 \begin{lemma}[Jensen's inequality for the conditional expectation]\label{lem:conditional_jensen}
-  \leanok
-  \lean{MeasureTheory.conditional_jensen}
+  \mathlibok
+  \lean{ConvexOn.map_condExp_le_univ}
 Let $X : \Omega \to E$ be an integrable random variable with values in a normed space $E$ and let $\phi : E \to \mathbb{R}$ be a convex function such that $\phi \circ X$ is integrable.
 Then, for any sub-$\sigma$-algebra $\mathcal{G}$, we have
 \begin{align*}
@@ -160,7 +160,7 @@ Then, for any sub-$\sigma$-algebra $\mathcal{G}$, we have
 \end{align*}
 \end{lemma}
 
-\begin{proof}
+\begin{proof}\leanok
 Done in a Mathlib PR for finite measures: \href{https://github.com/leanprover-community/mathlib4/pull/27953}{\#27953}.
 \end{proof}
 
@@ -299,6 +299,28 @@ For $X : T \to \Omega \to E$ a stochastic process, $B$ a subset of $E$ and $t_0 
 in which the infimum is infinite if the set is empty.
 \end{definition}
 
+
+\begin{definition}\label{def:hittingBtwn}
+  \mathlibok
+  \lean{MeasureTheory.hittingBtwn}
+For $X : T \to \Omega \to E$ a stochastic process, $B$ a subset of $E$ and $t_0, t_1 \in T$, the hitting time of $X$ in $B$ between $t_0$ and $t_1$ is the random variable $\Omega \to T\cup\{\infty\}$ defined by
+\begin{align*}
+  \tau_{B, t_0, t_1}(\omega) = \inf\{t \in T \mid t_0 \le t \le t_1, \: X_t(\omega) \in B\} \: ,
+\end{align*}
+in which the infimum is infinite if the set is empty.
+\end{definition}
+
+
+\begin{lemma}\label{lem:isStoppingTime_hittingBtwn}
+  \uses{def:hittingBtwn, def:IsStoppingTime}
+  \mathlibok
+  \lean{MeasureTheory.Adapted.isStoppingTime_hittingBtwn}
+The hitting time $\tau_{B, t_0, t_1}$ of a measurable set by an adapted process on a discrete time index is a stopping time.
+\end{lemma}
+
+\begin{proof}\leanok
+
+\end{proof}
 
 
 \section{Right-continuous filtrations}
@@ -573,9 +595,11 @@ Fake lemma for the dependency graph. Import this to depend on Definition~\ref{de
 \begin{definition}[Usual conditions]\label{def:hasUsualConditions}
   \uses{def:rightContinuous, lem:rightContinuous_basic}
   \leanok
-  \lean{MeasureTheory.Filtration.HasUsualConditions}
-We say that a filtered probability space $(\Omega, \mathcal{F}, P)$ satisfies the usual conditions if the filtration is right-continuous and if $\mathcal{F}_0$ contains all the $P$-null sets.
+  \lean{MeasureTheory.Filtration.IsComplete}
+We say that a filtered probability space $(\Omega, \mathcal{F}, P)$ satisfies the usual conditions if the filtration is right-continuous and if $\mathcal{F}_t$ contains all the $P$-null sets for all $t \in T$.
 \end{definition}
+
+TODO: adapt this text. In Lean, we don't have a single def for the usual conditions, but rather we have separate defs for right-continuity and completeness.
 
 
 
@@ -596,15 +620,15 @@ The predictable sigma-algebra on $T \times \Omega$ is the sigma-algebra generate
 \begin{definition}[Predictable process]\label{def:predictable}
   \uses{def:predictableMeasurableSpace}
   \mathlibok
-  \lean{MeasureTheory.IsPredictable}
+  \lean{MeasureTheory.IsStronglyPredictable}
 A process $X : T \to \Omega \to E$ is said to be predictable with respect to a filtration $\mathcal{F}$ if it is measurable with respect to the predictable sigma-algebra on $T \times \Omega$.
 \end{definition}
 
 
 \begin{lemma}\label{lem:Predictable.progressive}
-  \uses{def:predictable, def:ProgMeasurable}
+  \uses{def:predictable, def:IsStronglyProgressive}
   \mathlibok
-  \lean{MeasureTheory.IsPredictable.progMeasurable}
+  \lean{MeasureTheory.IsStronglyPredictable.isStronglyProgressive}
 A predictable process is progressively measurable.
 \end{lemma}
 
@@ -644,7 +668,7 @@ $(s, t] \times A = (s, \infty) \times A \setminus (t, \infty) \times A$.
 \begin{lemma}\label{lem:predictable_nat_iff}
   \uses{def:predictable}
   \mathlibok
-  \lean{MeasureTheory.isPredictable_iff_measurable_add_one}
+  \lean{MeasureTheory.IsStronglyPredictable.iff_measurable_add_one}
 Let $X : \mathbb{N} \to \Omega \to E$ be a stochastic process and let $\mathcal{F}$ be a filtration indexed by $\mathbb{N}$.
 Then $X$ is predictable if and only if $X_0$ is $\mathcal{F}_0$-measurable and for all $n \in \mathbb{N}$, $X_{n+1}$ is $\mathcal{F}_n$-measurable.
 \end{lemma}
@@ -671,6 +695,18 @@ Now, supposing $X_0$ is $\mathcal{F}_0$-measurable and $X_{n + 1}$ is $\mathcal{
 $$X^{-1}(S) = \bigcup_{n \in \mathbb{N}} \{n\} \times X_n^{-1}(S) = {0} \times X_0^{-1}(S) \cup \bigcup_{n \in \mathbb{N}} \{n + 1\} \times X_{n + 1}^{-1}(S).$$
 Thus, as $\{0\} \times X_0^{-1}(S) \in \Sigma_{\mathcal{F}}$ by construction and $\{n + 1\} \times X_{n + 1}^{-1}(S) = (n, n + 1] \times X_{n + 1}^{-1}(S) \in \Sigma_{\mathcal{F}}$ by Lemma~\ref{lem:predictable_Ioc_prod} and the fact that $X_{n + 1}^{-1}(S) \in \mathcal{F}_n$, we have that $X^{-1}(S) \in \Sigma_{\mathcal{F}}$ as required.
 \end{proof}
+
+
+\begin{lemma}\label{lem:Adapted.isPredictable_of_leftContinuous}
+  \uses{def:predictable}
+An adapted process with left-continuous paths is predictable.
+\end{lemma}
+
+\begin{proof}
+
+\end{proof}
+
+
 
 \section{Uniformly integrable}
 
@@ -811,9 +847,9 @@ Then, the family of stopped values $\{X_{\tau_k}\}_{k \in \mathbb{N}}$ is unifor
 \end{lemma}
 
 \begin{proof}
-  \uses{def:martingalePart, lem:martingale_martingalePart, def:predictablePart, lem:predictable_predictablePart, lem:uniformIntegrable_stoppedValue_martingale, lem:uniformIntegrableAdd, lem:uniformIntegrableDominatedSingleton, lem:predictablePart_zero, lem:nondecreasing_predictablePart_of_submartingale}
+  \uses{def:martingalePart, lem:martingale_martingalePart, def:predictablePart, lem:predictable_predictablePart, lem:uniformIntegrable_stoppedValue_martingale, lem:uniformIntegrableAdd, lem:uniformIntegrableDominatedSingleton, lem:predictablePart_zero, lem:Submartingale.monotone_predictablePart, lem:centering_basic}
 Use Doob decomposition to write $X_n = M_n + A_n$, where $M$ (Definition~\ref{def:martingalePart}) is a martingale (Lemma~\ref{lem:martingale_martingalePart}) and $A$ (Definition~\ref{def:predictablePart}) is a predictable process (Lemma~\ref{lem:predictable_predictablePart}).
-We know from Lemma~\ref{lem:uniformIntegrable_stoppedValue_martingale} that $(M_{\tau_k})_{k \in \mathbb{N}}$ is uniformly integrable. Combining Lemma~\ref{lem:uniformIntegrableAdd} and Lemma~\ref{lem:uniformIntegrableDominatedSingleton}, it suffices to show that $(A_{\tau_k})_{k \in \mathbb{N}}$ is dominated. It is dominated by $A_p$ thanks to Lemma~\ref{lem:predictablePart_zero} and Lemma~\ref{lem:nondecreasing_predictablePart_of_submartingale}.
+We know from Lemma~\ref{lem:uniformIntegrable_stoppedValue_martingale} that $(M_{\tau_k})_{k \in \mathbb{N}}$ is uniformly integrable. Combining Lemma~\ref{lem:uniformIntegrableAdd} and Lemma~\ref{lem:uniformIntegrableDominatedSingleton}, it suffices to show that $(A_{\tau_k})_{k \in \mathbb{N}}$ is dominated. It is dominated by $A_p$ thanks to Lemma~\ref{lem:predictablePart_zero} and Lemma~\ref{lem:Submartingale.monotone_predictablePart}.
 \end{proof}
 
 \begin{lemma}\label{lem:memLp_of_tendstoInMeasure}
@@ -913,8 +949,8 @@ Let $X$ be a discrete time submartingale with respect to the filtration $\mathca
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:martingale_martingalePart, lem:predictable_predictablePart, lem:optionalSampling_discrete, lem:nondecreasing_predictablePart_of_submartingale}
-Use Doob decomposition to write $X_n = M_n + A_n$, where $M$ (Definition~\ref{def:martingalePart}) is a martingale (Lemma~\ref{lem:martingale_martingalePart}) and $A$ (Definition~\ref{def:predictablePart}) is a predictable process (Lemma~\ref{lem:predictable_predictablePart}). By Lemma~\ref{lem:optionalSampling_discrete}, we have that almost surely, $M_{\tau \wedge \sigma} = P[M_{\tau} \mid \mathcal{F}_{\sigma}]$. Because $A$ is predictable and $\tau \wedge \sigma \le \sigma$, we deduce that almost surely, $A_{\tau \wedge \sigma} = P[A_{\tau \wedge \sigma} \mid \mathcal{F}_\sigma]$. Moreover, by Lemma~\ref{lem:nondecreasing_predictablePart_of_submartingale}, we know that almost surely, $A$ is nondecreasing. Therefore, using the fact $\tau \wedge \sigma \le \tau$, we get that $P[A_{\tau \wedge \sigma} \mid \mathcal{F}_\sigma] \le P[A_\tau \mid \mathcal{F}_\sigma]$. We deduce that almost surely,
+  \uses{lem:martingale_martingalePart, lem:predictable_predictablePart, lem:optionalSampling_discrete, lem:Submartingale.monotone_predictablePart, lem:centering_basic}
+Use Doob decomposition to write $X_n = M_n + A_n$, where $M$ (Definition~\ref{def:martingalePart}) is a martingale (Lemma~\ref{lem:martingale_martingalePart}) and $A$ (Definition~\ref{def:predictablePart}) is a predictable process (Lemma~\ref{lem:predictable_predictablePart}). By Lemma~\ref{lem:optionalSampling_discrete}, we have that almost surely, $M_{\tau \wedge \sigma} = P[M_{\tau} \mid \mathcal{F}_{\sigma}]$. Because $A$ is predictable and $\tau \wedge \sigma \le \sigma$, we deduce that almost surely, $A_{\tau \wedge \sigma} = P[A_{\tau \wedge \sigma} \mid \mathcal{F}_\sigma]$. Moreover, by Lemma~\ref{lem:Submartingale.monotone_predictablePart}, we know that almost surely, $A$ is nondecreasing. Therefore, using the fact $\tau \wedge \sigma \le \tau$, we get that $P[A_{\tau \wedge \sigma} \mid \mathcal{F}_\sigma] \le P[A_\tau \mid \mathcal{F}_\sigma]$. We deduce that almost surely,
 $$X_{\tau \wedge \sigma} = M_{\tau \wedge \sigma} + A_{\tau \wedge \sigma} \le P[M_\tau \mid \mathcal{F}_\sigma] + P[A_\tau \mid \mathcal{F}_\sigma] = P[X_\tau \mid \mathcal{F}_\sigma],$$
 concluding the proof.
 \end{proof}
@@ -1011,7 +1047,7 @@ We know that $-X$ is a submartingale, so from Lemma~\ref{lem:optionalSampling_di
   we have that $(\tau_n)$ is a discrete approximation sequence of $\tau$.
 \end{lemma}
 
-\begin{proof}
+\begin{proof}\leanok
   Clearly $\tau_n \downarrow \tau$ as $n \to \infty$ and so it remains to show that each $\tau_n$ is a stopping time.
   Indeed,
   \[\{\tau_n \le t\} = \{\tau \le 2^{-n} \lfloor 2^n t\rfloor\}
@@ -1025,7 +1061,8 @@ We know that $-X$ is a submartingale, so from Lemma~\ref{lem:optionalSampling_di
   \lean{Nat.approximable}
   $T = \mathbb{N}$ is an approximable time index.
 \end{lemma}
-\begin{proof}
+
+\begin{proof}\leanok
   Immediate as we can take \(\tau_n = \tau\) for all \(n\).
 \end{proof}
 

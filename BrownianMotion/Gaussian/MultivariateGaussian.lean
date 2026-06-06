@@ -3,21 +3,17 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import BrownianMotion.Gaussian.Gaussian
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.CStarAlgebra.Matrix
-import Mathlib.Analysis.Normed.Field.Instances
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Inner
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Separation.CompletelyRegular
-import Mathlib.Analysis.Matrix.Order
-import Mathlib.Probability.Distributions.Gaussian.Multivariate
+module
+
+public import BrownianMotion.Auxiliary.WithLp
+public import BrownianMotion.Gaussian.CovMatrix
+public import Mathlib.Probability.Distributions.Gaussian.Multivariate
 
 /-!
 # Multivariate Gaussian distributions
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory Filter Matrix NormedSpace WithLp
 open scoped ENNReal NNReal Topology RealInnerProductSpace MatrixOrder
@@ -41,7 +37,6 @@ lemma covMatrix_stdGaussian : covMatrix (stdGaussian E) = 1 := by
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
   {μ : EuclideanSpace ℝ ι} {S : Matrix ι ι ℝ} {hS : S.PosSemidef}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inner_toEuclideanCLM (x y : EuclideanSpace ℝ ι) :
     ⟪x, toEuclideanCLM (𝕜 := ℝ) S y⟫
       = (EuclideanSpace.basisFun ι ℝ).toBasis.repr x ⬝ᵥ S

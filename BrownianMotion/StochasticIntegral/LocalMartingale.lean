@@ -3,13 +3,18 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import BrownianMotion.Auxiliary.Martingale
-import BrownianMotion.StochasticIntegral.Locally
-import BrownianMotion.StochasticIntegral.OptionalSampling
+module
+
+public import BrownianMotion.Auxiliary.IsStoppingTime
+public import BrownianMotion.Auxiliary.Martingale
+public import BrownianMotion.StochasticIntegral.Locally
+public import BrownianMotion.StochasticIntegral.OptionalSampling
 
 /-! # Local (sub)martingales
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter TopologicalSpace Function
 open scoped ENNReal
@@ -33,39 +38,40 @@ def IsLocalSubmartingale [LE E] (X : ι → Ω → E) (𝓕 : Filtration ι mΩ)
 
 lemma Martingale.IsLocalMartingale (hX : Martingale X 𝓕 P) (hC : ∀ ω, IsCadlag (X · ω)) :
     IsLocalMartingale X 𝓕 P :=
-  locally_of_prop ⟨hX, hC⟩
+  .of_prop ⟨hX, hC⟩
 
 lemma Submartingale.IsLocalSubmartingale [LE E]
     (hX : Submartingale X 𝓕 P) (hC : ∀ ω, IsCadlag (X · ω)) :
     IsLocalSubmartingale X 𝓕 P :=
-  locally_of_prop ⟨hX, hC⟩
+  .of_prop ⟨hX, hC⟩
 
 variable [SecondCountableTopology ι] [MeasurableSpace ι] [BorelSpace ι]
 
-lemma IsLocalMartingale.locally_progMeasurable (hX : IsLocalMartingale X 𝓕 P) :
-    Locally (ProgMeasurable 𝓕) 𝓕 X P :=
-  Locally.mono (fun _ ⟨hX, hC⟩ ↦ hX.stronglyAdapted.progMeasurable_of_rightContinuous
+lemma IsLocalMartingale.locally_isStronglyProgressive (hX : IsLocalMartingale X 𝓕 P) :
+    Locally (IsStronglyProgressive 𝓕) 𝓕 X P :=
+  Locally.mono (fun _ ⟨hX, hC⟩ ↦ hX.stronglyAdapted.isStronglyProgressive_of_rightContinuous
     (fun ω ↦ (hC ω).right_continuous)) hX
 
-lemma IsLocalSubmartingale.locally_progMeasurable [LE E] (hX : IsLocalSubmartingale X 𝓕 P) :
-    Locally (ProgMeasurable 𝓕) 𝓕 X P :=
-  Locally.mono (fun _ ⟨hX, hC⟩ ↦ hX.stronglyAdapted.progMeasurable_of_rightContinuous
+lemma IsLocalSubmartingale.locally_isStronglyProgressive [LE E] (hX : IsLocalSubmartingale X 𝓕 P) :
+    Locally (IsStronglyProgressive 𝓕) 𝓕 X P :=
+  Locally.mono (fun _ ⟨hX, hC⟩ ↦ hX.stronglyAdapted.isStronglyProgressive_of_rightContinuous
     (fun ω ↦ (hC ω).right_continuous)) hX
 
 variable [PseudoMetrizableSpace ι]
 
 omit [NormedSpace ℝ E] [CompleteSpace E] in
 lemma _root_.MeasureTheory.StronglyAdapted.stoppedProcess_indicator
-    (hX : StronglyAdapted 𝓕 X) (hC : ∀ ω, RightContinuous (X · ω))
+    (hX : StronglyAdapted 𝓕 X) (hC : ∀ ω, IsRightContinuous (X · ω))
     {τ : Ω → WithTop ι} (hτ : IsStoppingTime 𝓕 τ) :
     StronglyAdapted 𝓕 (stoppedProcess (fun i ↦ {ω | ⊥ < τ ω}.indicator (X i)) τ) :=
-  (isStable_progMeasurable X (hX.progMeasurable_of_rightContinuous hC) τ hτ).stronglyAdapted
+  (isStable_isStronglyProgressive X (hX.isStronglyProgressive_of_rightContinuous hC)
+    τ hτ).stronglyAdapted
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [IsFiniteMeasure P]
   [Approximable 𝓕 P]
 
 lemma _root_.MeasureTheory.Martingale.stoppedProcess_indicator
-    (hX : Martingale X 𝓕 P) (hC : ∀ ω, RightContinuous (X · ω))
+    (hX : Martingale X 𝓕 P) (hC : ∀ ω, IsRightContinuous (X · ω))
     {τ : Ω → WithTop ι} (hτ : IsStoppingTime 𝓕 τ) :
     Martingale (stoppedProcess (fun i ↦ {ω | ⊥ < τ ω}.indicator (X i)) τ) 𝓕 P := by
   refine ⟨hX.stronglyAdapted.stoppedProcess_indicator hC hτ, fun i j hij ↦ ?_⟩

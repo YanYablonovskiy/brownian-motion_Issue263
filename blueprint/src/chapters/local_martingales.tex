@@ -93,7 +93,7 @@ Then, there exists a strictly increasing sequence $(k_n)_{n \in \mathbb{N}}$ suc
 
 \begin{definition}[Local property]\label{def:locally}
   \uses{def:localizingSequence, def:stoppedProcess}
-  \leanok
+  \mathlibok
   \lean{ProbabilityTheory.Locally, ProbabilityTheory.Locally.localSeq}
 Let $P$ be a class of stochastic processes (or equivalently a predicate on stochastic processes).
 We say that a stochastic process $X : T \to \Omega \to E$ is locally in $P$ (or satisfies $P$ locally) if there exists a localizing sequence $(\tau_n)_{n \in \mathbb{N}}$ such that for all $n \in \mathbb{N}$, the process $X^{\tau_n}\mathbb{I}_{\tau_n > 0}$ is in $P$ (in which $X^{\tau_n}$ denotes the stopped process).
@@ -103,8 +103,8 @@ We denote the class of processes that are locally in $P$ by $P_{\mathrm{loc}}$.
 
 \begin{lemma}\label{lem:implies_locally}
   \uses{def:locally}
-  \leanok
-  \lean{ProbabilityTheory.locally_of_prop}
+  \mathlibok
+  \lean{ProbabilityTheory.Locally.of_prop}
 For any class of processes $P$, we have $P \subseteq P_{\mathrm{loc}}$.
 \end{lemma}
 
@@ -116,7 +116,7 @@ Take $\tau_n = \infty$ for all $n$.
 
 \begin{lemma}\label{lem:locally_mono}
   \uses{def:locally}
-  \leanok
+  \mathlibok
   \lean{ProbabilityTheory.Locally.mono}
 If $P \subseteq Q$ then $P_{\mathrm{loc}} \subseteq Q_{\mathrm{loc}}$.
 \end{lemma}
@@ -131,7 +131,7 @@ Thus $X \in Q_{\mathrm{loc}}$.
 
 \begin{definition}\label{def:stable}
   \uses{def:locally}
-  \leanok
+  \mathlibok
   \lean{ProbabilityTheory.IsStable}
 A class of stochastic processes $P$ is stable if whenever $X$ is in $P$, then for any stopping time $\tau$, the process $X^{\tau}\mathbb{I}_{\tau > 0}$ is also in $P$.
 \end{definition}
@@ -139,8 +139,8 @@ A class of stochastic processes $P$ is stable if whenever $X$ is in $P$, then fo
 
 \begin{lemma}\label{lem:isStable_locally}
   \uses{def:locally, def:stable}
-  \leanok
-  \lean{ProbabilityTheory.IsStable.isStable_locally}
+  \mathlibok
+  \lean{ProbabilityTheory.IsStable.locally}
 If $P$ is a stable class of processes, then $P_{\mathrm{loc}}$ is also stable.
 \end{lemma}
 
@@ -151,8 +151,8 @@ If $P$ is a stable class of processes, then $P_{\mathrm{loc}}$ is also stable.
 
 \begin{lemma}\label{lem:locally_inter}
   \uses{def:locally, def:stable}
-  \leanok
-  \lean{ProbabilityTheory.locally_and}
+  \mathlibok
+  \lean{ProbabilityTheory.IsStable.and}
 If $P, Q$ are stable classes of processes then $(P\cap Q)_{\mathrm{loc}} = P_{\mathrm{loc}}\cap Q_{\mathrm{loc}}$.
 \end{lemma}
 
@@ -168,8 +168,8 @@ Similarly, by the stability of $Q$, $X^{\sigma_n \wedge \tau_n} \mathbb{I}_{\sig
 
 \begin{lemma}\label{lem:locally_of_isPreLocalizingSequence}
   \uses{def:locally, def:localizingSequence, def:stable, lem:rightContinuous_basic, def:preLocalizingSequence}
-  \leanok
-  \lean{ProbabilityTheory.locally_of_isPreLocalizingSequence}
+  \mathlibok
+  \lean{ProbabilityTheory.IsStable.locally_of_isPreLocalizingSequence}
 Let $P$ be a stable class of processes and let $(\tau_n)_{n \in \mathbb{N}}$ be a pre-localizing sequence such that for all $n \in \mathbb{N}$, $X^{\tau_n}\mathbb{I}_{\tau_n > 0}$ is in $P$.
 If the filtration is right-continuous, then $X$ is locally in $P$.
 \end{lemma}
@@ -182,8 +182,8 @@ If the filtration is right-continuous, then $X$ is locally in $P$.
 
 \begin{lemma}\label{lem:locally_locally}
   \uses{def:locally, def:stable}
-  \leanok
-  \lean{ProbabilityTheory.locally_locally}
+  \mathlibok
+  \lean{ProbabilityTheory.IsStable.locally_locally_iff}
 Suppose that the filtration is right-continuous.
 For any stable class of processes $P$, we have $(P_{\mathrm{loc}})_{\mathrm{loc}} = P_{\mathrm{loc}}$.
 \end{lemma}
@@ -205,8 +205,8 @@ Indeed, this follows as $X^{\tau'_n}\mathbb{I}_{\tau'_n > 0} = ((X^{\tau_n}\math
 
 \begin{lemma}[Local implication from global implication]\label{lem:local_induction}
   \uses{def:locally, def:stable}
-  \leanok
-  \lean{ProbabilityTheory.locally_induction}
+  \mathlibok
+  \lean{ProbabilityTheory.IsStable.locally_induction}
 Suppose that the filtration is right-continuous.
 Let $P, Q$ be two classes of stochastic processes such that $P \subseteq Q_{\mathrm{loc}}$ and $Q$ is stable.
 Let $X$ be a stochastic process that satisfies $P$ locally.
@@ -318,10 +318,10 @@ We in this section assume $\mathcal{F}$ satisfies the usual conditions (i.e. com
 \end{proof}
 
 
-\begin{lemma}\label{lem:isStable_progMeasurable}
+\begin{lemma}\label{lem:isStable_isStronglyProgressive}
   \uses{def:stable}
   \leanok
-  \lean{ProbabilityTheory.isStable_progMeasurable}
+  \lean{ProbabilityTheory.isStable_isStronglyProgressive}
 The class of progressively measurable processes is stable.
 \end{lemma}
 
@@ -393,7 +393,7 @@ The class of cadlag submartingales is stable. That is, if $M$ is a cadlag submar
 \end{lemma}
 
 \begin{proof}
-  \uses{lem:optionalSampling}
+  \uses{lem:optionalSamplingSubmartingale}
 
 \end{proof}
 
@@ -563,7 +563,7 @@ Let $X$ be càdlàg martingale. By Lemma~\ref{lem:Martingale.submartingale_conve
 A right-continuous martingale is of class D if and only if it is uniformly integrable.
 \end{lemma}
 
-\begin{proof}
+\begin{proof}\leanok
   \uses{lem:Submartingale.classD_iff_uniformIntegrable, lem:uniformIntegrableIffNorm, lem:classD_iff_norm, cor:Martingale.submartingale_norm}
 Applying Lemma~\ref{lem:classD_iff_norm} and Lemma~\ref{lem:uniformIntegrableIffNorm}, it suffices to show the result for the norm of the martingale.
 That norm is a nonnegative right-continuous submartingale by Lemma~\ref{cor:Martingale.submartingale_norm} so this follows from Lemma~\ref{lem:Submartingale.classD_iff_uniformIntegrable}.
@@ -617,7 +617,7 @@ The class D is stable.
 \end{lemma}
 
 \begin{proof}\leanok
-  \uses{lem:uniformIntegrableComp, lem:uniformIntegrableDominated, lem:isStable_progMeasurable}
+  \uses{lem:uniformIntegrableComp, lem:uniformIntegrableDominated, lem:isStable_isStronglyProgressive}
 Let $X$ be a process of class D and $\tau$ be a stopping time. For any finite stopping time $\sigma$, we have that $X_\sigma^\tau = X_{\sigma \land \tau}$. Because $\sigma \land \tau$ is finite and $X$ is of class D, we deduce from Lemma~\ref{lem:uniformIntegrableComp} that $\{X_{\sigma \land \tau} \mid \sigma \text{ is a finite stopping time}\}$ is uniformly integrable, and thus that $\{X^\tau_\sigma \mid \sigma \text{ is a finite stopping time}\}$ is uniformly integrable. Using Lemma~\ref{lem:uniformIntegrableDominated}, we obtain that $\{X^\tau_\sigma \mathbb{I}_{\tau > 0} \mid \sigma \text{ is a finite stopping time}\}$ is uniformly integrable, which concludes the proof.
 \end{proof}
 
@@ -630,7 +630,7 @@ The class DL is stable.
 \end{lemma}
 
 \begin{proof}\leanok
-  \uses{lem:uniformIntegrableComp, lem:uniformIntegrableDominated, lem:isStable_progMeasurable}
+  \uses{lem:uniformIntegrableComp, lem:uniformIntegrableDominated, lem:isStable_isStronglyProgressive}
 Let $X$ be a process of class DL, $\tau$ be a stopping time. Let $t \in T$. For any stopping time $\sigma \le t$, we have that $X_\sigma^\tau = X_{\sigma \land \tau}$. Because $\sigma \land \tau$ is bounded by $t$ and $X$ is of class DL, we deduce from Lemma~\ref{lem:uniformIntegrableComp} that $\{X_{\sigma \land \tau} \mid \sigma \text{ is a stopping time with } \sigma \le t\}$ is uniformly integrable, and thus that $\{X^\tau_\sigma \mid \sigma \text{ is a stopping time with } \sigma \le t\}$ is uniformly integrable. Using Lemma~\ref{lem:uniformIntegrableDominated}, we obtain that $\{X^\tau_\sigma \mathbb{I}_{\tau > 0} \mid \sigma \text{ is a stopping time with } \sigma \le t\}$ is uniformly integrable, which concludes the proof.
 \end{proof}
 
@@ -651,10 +651,10 @@ This proves that $X$ is of class DL.
 \end{proof}
 
 
-\begin{lemma}\label{lem:ProgMeasurable.hasStronglyMeasurableSup}
-  \uses{def:ProgMeasurable}
+\begin{lemma}\label{lem:IsStronglyProgressive.hasStronglyMeasurableSup}
+  \uses{def:IsStronglyProgressive}
   \leanok
-  \lean{MeasureTheory.ProgMeasurable.hasStronglyMeasurableSupProcess}
+  \lean{MeasureTheory.IsStronglyProgressive.hasStronglyMeasurableSupProcess}
   If the filtration satisfies the usual conditions, a progressively measurable process has a supremum that is jointly strongly measurable.
 \end{lemma}
 
@@ -671,8 +671,8 @@ Let $X$ be a progressively measurable stochastic process with locally integrable
 \end{lemma}
 
 \begin{proof}\leanok
-  \uses{lem:Integrable.classDL, lem:locally_mono, lem:isStable_progMeasurable}
-Combine Lemma~\ref{lem:Integrable.classDL} and Lemma~\ref{lem:locally_mono}. Use Lemma~\ref{lem:isStable_progMeasurable} to get progressive measurability of the stopped processes.
+  \uses{lem:Integrable.classDL, lem:locally_mono, lem:isStable_isStronglyProgressive}
+Combine Lemma~\ref{lem:Integrable.classDL} and Lemma~\ref{lem:locally_mono}. Use Lemma~\ref{lem:isStable_isStronglyProgressive} to get progressive measurability of the stopped processes.
 \end{proof}
 
 
@@ -768,7 +768,7 @@ If $X$ is a càdlàg process of class DL, then it has locally integrable supremu
 \end{lemma}
 
 \begin{proof}\leanok
-  \uses{lem:isLocalizingSequence_leastGE, lem:sup_stoppedProcess_le,lem:ProgMeasurable.hasStronglyMeasurableSup}
+  \uses{lem:isLocalizingSequence_leastGE, lem:sup_stoppedProcess_le,lem:IsStronglyProgressive.hasStronglyMeasurableSup}
 Set $\tau_n := \inf \{t | X_t \ge n\}$. This is a localizing sequence by Lemma~\ref{lem:isLocalizingSequence_leastGE}. For every $t \in T$, we have by Lemma~\ref{lem:sup_stoppedProcess_le} that $(X^{\tau_n})^*_t \le n + \mathbb{I}_{\tau_n \le t} \|X_{\tau_n}\| = n + \mathbb{I}_{\tau_n \le t} \|X_{\tau_n \land t}\|$. Because X is of class DL, $X_{\tau_n \land t}$ is integrable, so $(X^{\tau_n})^*_t$ is integrable too, so $(X^{\tau_n} \mathbb{I}_{\tau_n > 0})^*_t$ is integrable. Thus $X$ has locally integrable supremum.
 \end{proof}
 

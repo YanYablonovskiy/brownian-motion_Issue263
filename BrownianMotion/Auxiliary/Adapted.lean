@@ -1,6 +1,10 @@
-import Mathlib.Probability.Process.Adapted
-import Mathlib.Data.Setoid.Partition
-import BrownianMotion.StochasticIntegral.Cadlag
+module
+
+public import Mathlib.Probability.Process.Adapted
+public import Mathlib.Data.Setoid.Partition
+public import BrownianMotion.StochasticIntegral.Cadlag
+
+@[expose] public section
 
 open Filter Set TopologicalSpace Function MeasureTheory
 open scoped NNReal ENNReal Topology
@@ -25,12 +29,6 @@ theorem _root_.Set.range_indexedPartition_subset (f : ι → Ω → β) :
   fun x ⟨y, hy⟩ => by simpa [IndexedPartition.piecewise_apply] using ⟨hs.index y, y, hy⟩
 
 variable {mΩ : MeasurableSpace Ω} {mβ : MeasurableSpace β}
-
-/-- The norm of an adapted process is adapted. (TODO: Into mathlib) -/
-lemma StronglyAdapted.norm {E : Type*} [NormedAddCommGroup E] [PartialOrder ι]
-    {𝓕 : Filtration ι mΩ} {X : ι → Ω → E}
-    (hX : StronglyAdapted 𝓕 X) :
-    StronglyAdapted 𝓕 (fun t ω ↦ ‖X t ω‖) := fun t ↦ StronglyMeasurable.norm (hX t)
 
 theorem Measurable.IndexedPartition [Countable ι] (hms : ∀ i, MeasurableSet (s i))
     {f : ι → Ω → β} (hmf : ∀ i, Measurable (f i)) : Measurable (hs.piecewise f) := by
@@ -60,9 +58,9 @@ variable [TopologicalSpace ι] [LinearOrder ι] [OrderTopology ι] [SecondCounta
   [MeasurableSpace ι] [OpensMeasurableSpace ι] [PseudoMetrizableSpace β] {X : ι → Ω → β}
   {τ : Ω → WithTop ι} {n : ι}
 
-lemma StronglyAdapted.progMeasurable_of_rightContinuous {𝓕 : Filtration ι mΩ}
-    (h : StronglyAdapted 𝓕 X) (hu_cont : ∀ ω, RightContinuous (X · ω)) :
-    ProgMeasurable 𝓕 X := by
+lemma StronglyAdapted.isStronglyProgressive_of_rightContinuous {𝓕 : Filtration ι mΩ}
+    (h : StronglyAdapted 𝓕 X) (hu_cont : ∀ ω, IsRightContinuous (X · ω)) :
+    IsStronglyProgressive 𝓕 X := by
   intro t
   -- separate into two cases because the partition we defined below cannot contain empty sets
   rcases isEmpty_or_nonempty Ω with hΩ | hΩ

@@ -3,12 +3,18 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import BrownianMotion.Continuity.KolmogorovChentsovInequality
+module
+
+public import BrownianMotion.Auxiliary.Topology
+public import BrownianMotion.Continuity.KolmogorovChentsovInequality
+public import BrownianMotion.Gaussian.StochasticProcesses
 
 /-!
 # Kolmogorov-Chentsov theorem
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter
 open scoped ENNReal NNReal Topology Asymptotics
@@ -173,8 +179,8 @@ theorem measurable_limUnder {ι X E : Type*} [MeasurableSpace X] [TopologicalSpa
     Measurable (fun x ↦ limUnder l (f · x)) := by
   let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
   have mconv : MeasurableSet conv := measurableSet_exists_tendsto hf
-  have : (fun x ↦ _root_.limUnder l (f · x)) = ((↑) : conv → X).extend
-      (fun x ↦ _root_.limUnder l (f · x)) (fun _ ↦ hE.some) := by
+  have : (fun x ↦ Filter.limUnder l (f · x)) = ((↑) : conv → X).extend
+      (fun x ↦ Filter.limUnder l (f · x)) (fun _ ↦ hE.some) := by
     ext x
     by_cases hx : x ∈ conv
     · rw [Function.extend_val_apply hx]
@@ -393,8 +399,8 @@ lemma holderOnWith_of_mem_holderSet (hT : HasBoundedCoveringNumber U c d)
   have h_edist_lt_top : edist s t < ∞ := by
     calc edist s t ≤ Metric.ediam U := Metric.edist_le_ediam_of_mem hs ht
     _ < ∞ := hT.ediam_lt_top
-  have h_dist_top : edist s t ^ (β : ℝ) ≠ ∞
-  · simp only [ne_eq, ENNReal.rpow_eq_top_iff, NNReal.coe_pos, not_or, not_and, not_lt,
+  have h_dist_top : edist s t ^ (β : ℝ) ≠ ∞ := by
+    simp only [ne_eq, ENNReal.rpow_eq_top_iff, NNReal.coe_pos, not_or, not_and, not_lt,
       NNReal.zero_le_coe, implies_true, nonpos_iff_eq_zero, true_and]
     exact fun h_eq_top ↦ absurd h_eq_top h_edist_lt_top.ne
   by_cases h_dist_zero : edist s t = 0
@@ -455,7 +461,7 @@ lemma IsKolmogorovProcess.tendstoInMeasure (hX : IsKolmogorovProcess X P p q M)
     TendstoInMeasure P (fun n ↦ X (u n)) atTop (X t) := by
   refine tendstoInMeasure_of_ne_top fun ε hε hε_top ↦ ?_
   have h_tendsto : Tendsto (fun n ↦ ∫⁻ ω, edist (X (u n) ω) (X t ω) ^ p ∂P) atTop (𝓝 0) := by
-    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _)
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le)
       (fun n ↦ hX.kolmogorovCondition (u n) t)
     have : Tendsto (fun n ↦ edist (u n).1 t) atTop (𝓝 0) := by
       rwa [← tendsto_iff_edist_tendsto_0]
@@ -470,7 +476,7 @@ lemma IsKolmogorovProcess.tendstoInMeasure (hX : IsKolmogorovProcess X P p q M)
     ext ω
     simp only [Set.mem_setOf_eq]
     rw [ENNReal.rpow_le_rpow_iff hX.p_pos]
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _) ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le) ?_
     (h := fun n ↦ (ε ^ p)⁻¹ * ∫⁻ ω, edist (X (u n) ω) (X t ω) ^ p ∂P)
   · rw [← mul_zero (ε ^ p)⁻¹]
     exact ENNReal.Tendsto.const_mul h_tendsto (by simp [hε_top, hε.ne'])
@@ -814,7 +820,7 @@ lemma IsLimitOfIndicator.measurable_pair {Y X Z X' : T → Ω → E} {U₁ U₂ 
       simp only [indicatorProcess_apply, Set.mem_empty_iff_false, ↓reduceIte] at this
       refine this.of_edist_eq_zero fun ω ↦ ?_
       rw [Prod.edist_eq]
-      simp only [ENNReal.max_eq_zero_iff]
+      simp only [max_eq_zero]
       rw [edist_comm hE.some, edist_limUnder_const]
       simp only [and_true]
       exact edist_self _
@@ -835,7 +841,7 @@ lemma IsLimitOfIndicator.measurable_pair {Y X Z X' : T → Ω → E} {U₁ U₂ 
       simp only [indicatorProcess_apply, Set.mem_empty_iff_false, ↓reduceIte] at this
       refine this.of_edist_eq_zero fun ω ↦ ?_
       rw [Prod.edist_eq]
-      simp only [ENNReal.max_eq_zero_iff]
+      simp only [max_eq_zero]
       rw [edist_comm hE.some, edist_limUnder_const]
       simp only [true_and]
       exact edist_self _
@@ -1051,7 +1057,7 @@ lemma edist_modification_holderModification (hT : HasBoundedCoveringNumber U c d
     _ = P {ω | ε ≤ edist (Y (u n) ω) (Y t ω) + edist (X (u n) ω) (X t ω)} := by rw [hPA]
     _ ≤ P {ω | ε / 2 ≤ edist (Y (u n) ω) (Y t ω)}
         + P {ω | ε / 2 ≤ edist (X (u n) ω) (X t ω)} := measure_add_ge_le_add_measure_ge_half
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _) hP_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le) hP_le
   rw [← add_zero (0 : ℝ≥0∞)]
   exact Tendsto.add (h_tendsto_Y (ε / 2) (ENNReal.half_pos hε.ne'))
     (h_tendsto_X (ε / 2) (ENNReal.half_pos hε.ne'))
@@ -1099,11 +1105,11 @@ lemma exists_modification_holder_aux' (hT : HasBoundedCoveringNumber U c d)
   · obtain ⟨A, hA_meas, hA_ae, hY_tendsto, hYU, hYUc⟩ := hY_limit
     refine ⟨A, hA_meas, hA_ae, hY_tendsto, fun t htU ω ↦ ?_, fun t htU ω ↦ ?_⟩
     · specialize hYU t htU ω
-      refine le_antisymm ?_ (zero_le _)
+      refine le_antisymm ?_ zero_le
       refine (edist_triangle _ (Y t ω) _).trans ?_
       simpa [hZ_edist]
     · specialize hYUc t htU ω
-      refine le_antisymm ?_ (zero_le _)
+      refine le_antisymm ?_ zero_le
       refine (edist_triangle _ (Y t ω) _).trans ?_
       simpa [hZ_edist]
 
@@ -1393,7 +1399,8 @@ lemma exists_modification_holder_iSup' {C : ℕ → Set T} {c : ℕ → ℝ≥0�
     obtain ⟨U, hU_mem, hU⟩ := hZ_holder n ω t
     have hβ_pos_half : 0 < β n / 2 := by specialize hβ_pos n; positivity
     specialize hU (β n / 2) hβ_pos_half ?_
-    · simp [β, h_ratio_pos]
+    · simp only [NNReal.coe_div, NNReal.coe_ofNat, β]
+      convert half_lt_self (h_ratio_pos _)
     · obtain ⟨_, h⟩ := hU
       exact (h.continuousOn hβ_pos_half).continuousAt hU_mem
   have hZ_ae_eq' n : ∀ᵐ ω ∂P, ∀ t, edist (Z n t ω) (Z 0 t ω) = 0 := by
